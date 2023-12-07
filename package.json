@@ -1,0 +1,36 @@
+{
+  "name": "open-music",
+  "version": "1.0.0",
+  "description": "Dicoding Proyek OpenMusic API V.1",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zgramming/dicoding-open-music.git"
+  },
+  "keywords": [
+    "dicoding"
+  ],
+  "author": "zeffry reynando",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zgramming/dicoding-open-music/issues"
+  },
+  "homepage": "https://github.com/zgramming/dicoding-open-music#readme",
+  "devDependencies": {
+    "eslint": "^8.55.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.29.0",
+    "nodemon": "^3.0.2"
+  },
+  "dependencies": {
+    "@hapi/hapi": "^21.3.2",
+    "dotenv": "^16.3.1",
+    "joi": "^17.11.0",
+    "nanoid": "^5.0.4",
+    "node-pg-migrate": "^6.2.2",
+    "pg": "^8.11.3"
+  }
+}
