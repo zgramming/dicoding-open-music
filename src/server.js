@@ -8,6 +8,11 @@ const albums = require('./api/albums');
 const AlbumsService = require('./services/AlbumsService');
 const AlbumsValidator = require('./validator/albums');
 
+// Song Section
+const songs = require('./api/songs');
+const SongsService = require('./services/SongsService');
+const SongsValidator = require('./validator/songs');
+
 const init = async () => {
   const albumsService = new AlbumsService();
 
@@ -27,6 +32,13 @@ const init = async () => {
       options: {
         service: albumsService,
         validator: AlbumsValidator,
+      },
+    },
+    {
+      plugin: songs,
+      options: {
+        service: new SongsService(),
+        validator: SongsValidator,
       },
     },
   ]);
