@@ -9,4 +9,6 @@ const mappingSongFromDB = (song) => ({
   updatedAt: song.updated_at,
 });
 
-module.exports = { mappingSongFromDB };
+module.exports = {
+  mappingSongFromDB,
+};
