@@ -8,11 +8,10 @@ class AlbumsHandler {
     this.vldtr.validateAlbums(request.payload);
     const { name, year } = request.payload;
 
-    const body = {
+    const albumId = await this.svc.add({
       name,
       year,
-    };
-    const albumId = await this.svc.add(body);
+    });
 
     const response = h.response({
       status: 'success',
