@@ -8,13 +8,11 @@ exports.up = (pgm) => {
       type: 'VARCHAR(50)',
       notNull: true,
       references: '"playlists"',
-      onDelete: 'CASCADE',
     },
     user_id: {
       type: 'VARCHAR(50)',
       notNull: true,
       references: '"users"',
-      onDelete: 'CASCADE',
     },
   });
 

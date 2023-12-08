@@ -12,12 +12,8 @@ exports.up = (pgm) => {
       type: 'VARCHAR(50)',
       notNull: true,
       references: '"users"',
-      onDelete: 'CASCADE',
     },
   });
-
-  // memberikan constraint unique, kombinasi dari kolom name dan owner
-  pgm.addConstraint('playlists', 'unique_playlist_name', 'UNIQUE(name, owner)');
 };
 
 exports.down = (pgm) => {
