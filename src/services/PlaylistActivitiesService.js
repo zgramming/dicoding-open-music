@@ -1,8 +1,26 @@
 const { Pool } = require('pg');
+const { nanoid } = require('nanoid');
+const InvariantError = require('../exceptions/InvariantError');
 
 class PlaylistActivitiesService {
   constructor() {
     this.pool = new Pool();
+  }
+
+  async addActivity({ playlistId, songId, userId, action, time }) {
+    const id = `playlistactivities-${nanoid(16)}`;
+    const query = {
+      text: 'INSERT INTO playlist_activities VALUES($1, $2, $3, $4, $5, $6)',
+      values: [id, playlistId, songId, userId, action, time],
+    };
+
+    const result = await this.pool.query(query);
+
+    if (!result.rows.length) {
+      throw new InvariantError('Activity gagal ditambahkan');
+    }
+
+    return result.rows[0].id;
   }
 
   async getActivitiesByPlaylistId(playlistId) {

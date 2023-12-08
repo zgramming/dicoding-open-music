@@ -52,30 +52,23 @@ class PlaylistsHandler {
   }
 
   async postSongToPlaylistHandler(request, h) {
-    try {
-      this.vldtr.validatePostSongPlaylistPayload(request.payload);
-      const { playlistId } = request.params;
-      const { songId } = request.payload;
-      const { id: credentialId } = request.auth.credentials;
+    this.vldtr.validatePostSongPlaylistPayload(request.payload);
+    const { playlistId } = request.params;
+    const { songId } = request.payload;
+    const { id: credentialId } = request.auth.credentials;
 
-      await this.svc.addSongToPlaylist({
-        playlistId,
-        songId,
-        owner: credentialId,
-      });
+    await this.svc.addSongToPlaylist({
+      playlistId,
+      songId,
+      owner: credentialId,
+    });
 
-      const response = h.response({
-        status: 'success',
-        message: 'Lagu berhasil ditambahkan ke playlist',
-      });
-      response.code(201);
-      return response;
-    } catch (error) {
-      console.log({
-        error,
-      });
-      return error;
-    }
+    const response = h.response({
+      status: 'success',
+      message: 'Lagu berhasil ditambahkan ke playlist',
+    });
+    response.code(201);
+    return response;
   }
 
   async getPlaylistWithSongsHandler(request) {

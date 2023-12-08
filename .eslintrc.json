@@ -10,6 +10,12 @@
   },
   "rules": {
     "no-console": "off",
+    "max-len": [
+      "error",
+      {
+        "code": 120
+      }
+    ],
     "object-curly-newline": [
       "error",
       {

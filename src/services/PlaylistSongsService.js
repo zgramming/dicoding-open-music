@@ -3,12 +3,13 @@ const { nanoid } = require('nanoid');
 const InvariantError = require('../exceptions/InvariantError');
 
 class PlaylistSongsService {
-  constructor({ songsService }) {
+  constructor({ songsService, playlistActivitiesService }) {
     this.pool = new Pool();
     this.songsService = songsService;
+    this.playlistActivitiesService = playlistActivitiesService;
   }
 
-  async addSongToPlaylist(playlistId, songId) {
+  async addSongToPlaylist({ playlistId, songId }) {
     const song = await this.songsService.getById(songId);
 
     const id = `playlistsongs-${nanoid(16)}`;
@@ -27,7 +28,7 @@ class PlaylistSongsService {
     return result.rows[0].id;
   }
 
-  async deleteSongFromPlaylist(playlistId, songId) {
+  async deleteSongFromPlaylist({ playlistId, songId }) {
     const query = {
       text: 'DELETE FROM playlist_songs WHERE playlist_id = $1 AND song_id = $2 RETURNING id',
       values: [playlistId, songId],
