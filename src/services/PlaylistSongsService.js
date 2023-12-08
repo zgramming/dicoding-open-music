@@ -9,7 +9,7 @@ class PlaylistSongsService {
     this.playlistActivitiesService = playlistActivitiesService;
   }
 
-  async addSongToPlaylist({ playlistId, songId }) {
+  async addSongToPlaylist({ playlistId, songId, userId }) {
     const song = await this.songsService.getById(songId);
 
     const id = `playlistsongs-${nanoid(16)}`;
@@ -25,10 +25,16 @@ class PlaylistSongsService {
       throw new InvariantError('Lagu gagal ditambahkan ke playlist');
     }
 
-    return result.rows[0].id;
+    await this.playlistActivitiesService.addActivity({
+      playlistId,
+      songId,
+      userId,
+      action: 'add',
+      time: new Date().toISOString(),
+    });
   }
 
-  async deleteSongFromPlaylist({ playlistId, songId }) {
+  async deleteSongFromPlaylist({ playlistId, songId, userId }) {
     const query = {
       text: 'DELETE FROM playlist_songs WHERE playlist_id = $1 AND song_id = $2 RETURNING id',
       values: [playlistId, songId],
@@ -39,6 +45,14 @@ class PlaylistSongsService {
     if (!result.rows.length) {
       throw new InvariantError('Lagu gagal dihapus dari playlist');
     }
+
+    await this.playlistActivitiesService.addActivity({
+      playlistId,
+      songId,
+      userId,
+      action: 'delete',
+      time: new Date().toISOString(),
+    });
   }
 }
 

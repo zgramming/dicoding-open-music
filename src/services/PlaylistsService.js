@@ -77,6 +77,7 @@ class PlaylistsService {
     await this.playlistSongsService.addSongToPlaylist({
       playlistId,
       songId,
+      userId: owner,
     });
   }
 
@@ -98,6 +99,7 @@ class PlaylistsService {
     await this.playlistSongsService.deleteSongFromPlaylist({
       playlistId,
       songId,
+      userId: owner,
     });
   }
 

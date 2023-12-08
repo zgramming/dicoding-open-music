@@ -8,7 +8,7 @@ class PlaylistActivitiesService {
   }
 
   async addActivity({ playlistId, songId, userId, action, time }) {
-    const id = `playlistactivities-${nanoid(16)}`;
+    const id = `activities-${nanoid(16)}`;
     const query = {
       text: 'INSERT INTO playlist_activities VALUES($1, $2, $3, $4, $5, $6)',
       values: [id, playlistId, songId, userId, action, time],
@@ -16,11 +16,9 @@ class PlaylistActivitiesService {
 
     const result = await this.pool.query(query);
 
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new InvariantError('Activity gagal ditambahkan');
     }
-
-    return result.rows[0].id;
   }
 
   async getActivitiesByPlaylistId(playlistId) {

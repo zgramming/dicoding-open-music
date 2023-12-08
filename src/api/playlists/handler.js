@@ -118,7 +118,7 @@ class PlaylistsHandler {
     return {
       status: 'success',
       data: {
-        playlist,
+        ...playlist,
       },
     };
   }
