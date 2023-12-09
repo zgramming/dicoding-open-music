@@ -58,6 +58,32 @@ class AlbumsHandler {
       message: 'Album berhasil dihapus',
     };
   }
+
+  async postAlbumsUploadCoverHandler(request, h) {
+    const { cover } = request.payload;
+    const { id } = request.params;
+
+    this.vldtr.validateAlbumCoverHeaders(cover.hapi.headers);
+
+    const filename = await this.svc.uploadCover({
+      id,
+      file: cover,
+      meta: cover.hapi,
+    });
+
+    const fileLocation = `http://${process.env.HOST}:${process.env.PORT}/uploads/covers/${filename}`;
+    const response = h.response({
+      status: 'success',
+      message: 'Sampul berhasil diunggah',
+      data: {
+        fileLocation,
+      },
+    });
+
+    response.code(201);
+
+    return response;
+  }
 }
 
 module.exports = AlbumsHandler;

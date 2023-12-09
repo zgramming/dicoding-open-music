@@ -1,3 +1,5 @@
+const { cwd } = require('process');
+
 const routes = (handler) => [
   {
     method: 'POST',
@@ -18,6 +20,28 @@ const routes = (handler) => [
     method: 'DELETE',
     path: '/albums/{id}',
     handler: (request) => handler.deleteAlbumByIdHandler(request),
+  },
+  {
+    method: 'POST',
+    path: '/albums/{id}/covers',
+    handler: (request, h) => handler.postAlbumsUploadCoverHandler(request, h),
+    options: {
+      payload: {
+        allow: 'multipart/form-data',
+        multipart: true,
+        output: 'stream',
+        maxBytes: 500000, // 500 kB
+      },
+    },
+  },
+  {
+    method: 'GET',
+    path: '/uploads/covers/{param*}',
+    handler: {
+      directory: {
+        path: `${cwd()}/public/uploads/covers`,
+      },
+    },
   },
 ];
 
