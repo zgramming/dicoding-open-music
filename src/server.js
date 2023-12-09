@@ -6,11 +6,12 @@ const Inert = require('@hapi/inert');
 const { cwd } = require('process');
 
 const ClientError = require('./exceptions/ClientError');
-const { SERVER_AUTH_STRATEGY_NAME } = require('./utils/constant');
+const { SERVER_AUTH_STRATEGY_NAME, config } = require('./utils/constant');
 
 // Album Section
 const albums = require('./api/albums');
 const AlbumsService = require('./services/AlbumsService');
+const AlbumLikesService = require('./services/AlbumLikesService');
 const AlbumsValidator = require('./validator/albums');
 
 // Song Section
@@ -49,17 +50,26 @@ const ExportsValidator = require('./validator/exports');
 // Storage Section
 const StorageService = require('./services/StorageService');
 
+// Cache Section
+const CacheService = require('./services/CacheService');
+
 const init = async () => {
   const folderAlbumCoverStorage = `${cwd()}/public/uploads/covers`;
   const storageService = new StorageService(folderAlbumCoverStorage);
+  const cacheService = new CacheService();
+  const albumLikesService = new AlbumLikesService({
+    cacheService,
+  });
   const albumsService = new AlbumsService({
     storageService,
+    albumLikesService,
   });
   const songsService = new SongsService();
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
   const collaborationsService = new CollaborationsService({
     usersService,
+    cacheService,
   });
   const playlistActivitiesService = new PlaylistActivitiesService();
   const playlistSongsService = new PlaylistSongsService({
@@ -71,11 +81,12 @@ const init = async () => {
     songsService,
     playlistActivitiesService,
     collaborationsService,
+    cacheService,
   });
 
   const server = Hapi.server({
-    port: process.env.PORT || 3000,
-    host: process.env.HOST || 'localhost',
+    port: config.hapiServerOptions.port,
+    host: config.hapiServerOptions.host,
     routes: {
       cors: {
         origin: ['*'],
@@ -95,12 +106,12 @@ const init = async () => {
 
   // mendefinisikan strategy autentikasi jwt
   server.auth.strategy(SERVER_AUTH_STRATEGY_NAME, 'jwt', {
-    keys: process.env.ACCESS_TOKEN_KEY,
+    keys: config.jwtOptions.accessTokenKey,
     verify: {
       aud: false,
       iss: false,
       sub: false,
-      maxAgeSec: process.env.ACCESS_TOKEN_AGE,
+      maxAgeSec: config.jwtOptions.accessTokenAge,
     },
     validate: (artifacts) => ({
       isValid: true,

@@ -5,12 +5,13 @@ const NotFoundError = require('../exceptions/NotFoundError');
 const AuthorizationError = require('../exceptions/AuthorizationError');
 
 class PlaylistsService {
-  constructor({ playlistSongsService, songsService, playlistActivitiesService, collaborationsService }) {
+  constructor({ playlistSongsService, songsService, playlistActivitiesService, collaborationsService, cacheService }) {
     this.pool = new Pool();
     this.playlistSongsService = playlistSongsService;
     this.songsService = songsService;
     this.playlistActivitiesService = playlistActivitiesService;
     this.collaborationsService = collaborationsService;
+    this.cacheService = cacheService;
   }
 
   async addPlaylist({ name, owner }) {
@@ -25,10 +26,22 @@ class PlaylistsService {
       throw new InvariantError('Playlist gagal ditambahkan');
     }
 
+    // Remove cache if playlist added successfully
+    await this.cacheService.delete(`playlists:${owner}`);
+
     return result.rows[0].id;
   }
 
   async getPlaylists(owner) {
+    // First we check the cache if the playlist is already exist in cache or not
+    // If exist, we will get the playlist data from cache and return it to the user without querying the database
+    // If not exist, we will query the database to get the playlist data
+
+    const caches = await this.cacheService.get(`playlists:${owner}`);
+    if (caches) {
+      return JSON.parse(caches);
+    }
+
     const query = {
       text: `SELECT playlists.id, playlists.name, users.username FROM playlists
       LEFT JOIN users ON users.id = playlists.owner
@@ -40,7 +53,12 @@ class PlaylistsService {
     };
 
     const result = await this.pool.query(query);
-    return result.rows;
+    const { rows } = result;
+
+    // Store the playlist data to cache
+    await this.cacheService.set(`playlists:${owner}`, JSON.stringify(rows));
+
+    return rows;
   }
 
   async getPlaylistById(id) {
@@ -70,6 +88,9 @@ class PlaylistsService {
     if (!result.rows.length) {
       throw new NotFoundError('Playlist gagal dihapus. Id tidak ditemukan');
     }
+
+    // Remove cache if playlist deleted successfully
+    await this.cacheService.delete(`playlists:${owner}`);
   }
 
   async addSongToPlaylist({ owner, playlistId, songId }) {

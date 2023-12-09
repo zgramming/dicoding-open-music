@@ -4,9 +4,11 @@ const InvariantError = require('../exceptions/InvariantError');
 const NotFoundError = require('../exceptions/NotFoundError');
 
 class AlbumsService {
-  constructor({ storageService }) {
+  constructor({ storageService, albumLikesService, cacheService }) {
     this.pool = new Pool();
     this.storageService = storageService;
+    this.albumLikesService = albumLikesService;
+    this.cacheService = cacheService;
   }
 
   async add({ name, year }) {
@@ -34,6 +36,10 @@ class AlbumsService {
 
     const result = await this.pool.query(query);
 
+    if (!result.rowCount) {
+      throw new NotFoundError('Album tidak ditemukan');
+    }
+
     const songsByAlbumId = await this.pool.query({
       text: 'SELECT * FROM songs WHERE album_id = $1',
       values: [id],
@@ -44,10 +50,6 @@ class AlbumsService {
       title: song.title,
       performer: song.performer,
     }));
-
-    if (!result.rowCount) {
-      throw new NotFoundError('Album tidak ditemukan');
-    }
 
     const album = result.rows[0];
     const mappingAlbum = {
@@ -110,6 +112,29 @@ class AlbumsService {
     await this.updateCoverById(id, filename);
 
     return filename;
+  }
+
+  async likeAlbum({ albumId, userId }) {
+    const album = await this.getById(albumId);
+
+    await this.albumLikesService.addLike({
+      albumId: album.id,
+      userId,
+    });
+  }
+
+  async getTotalLikesByAlbumId(albumId) {
+    const album = await this.getById(albumId);
+    const result = await this.albumLikesService.getTotalLikesByAlbumId(album.id);
+
+    return result;
+  }
+
+  async unlikeAlbum({ albumId, userId }) {
+    await this.albumLikesService.deleteLike({
+      albumId,
+      userId,
+    });
   }
 }
 

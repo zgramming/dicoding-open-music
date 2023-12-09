@@ -1,3 +1,5 @@
+const { config } = require('../../utils/constant');
+
 class AlbumsHandler {
   constructor(service, validator) {
     this.svc = service;
@@ -71,7 +73,8 @@ class AlbumsHandler {
       meta: cover.hapi,
     });
 
-    const fileLocation = `http://${process.env.HOST}:${process.env.PORT}/uploads/covers/${filename}`;
+    const { host, port } = config.hapiServerOptions;
+    const fileLocation = `http://${host}:${port}/uploads/covers/${filename}`;
     const response = h.response({
       status: 'success',
       message: 'Sampul berhasil diunggah',
@@ -83,6 +86,62 @@ class AlbumsHandler {
     response.code(201);
 
     return response;
+  }
+
+  async postAlbumLikesHandler(request, h) {
+    const { id } = request.params;
+    const { id: credentialId } = request.auth.credentials;
+
+    await this.svc.likeAlbum({
+      albumId: id,
+      userId: credentialId,
+    });
+
+    const response = h.response({
+      status: 'success',
+      message: 'Album berhasil dilike',
+    });
+
+    response.code(201);
+
+    return response;
+  }
+
+  async getTotalLikesByAlbumIdHandler(request, h) {
+    const { id } = request.params;
+    const { likes: totalLikes, isFromCache } = await this.svc.getTotalLikesByAlbumId(id);
+
+    // If is from cache, add custom header property "X-Data-Source = cache"
+    const result = h.response({
+      status: 'success',
+      data: {
+        likes: +totalLikes,
+      },
+    });
+
+    if (isFromCache) {
+      // Adding custom header property "X-Data-Source = cache"
+      result.header('X-Data-Source', 'cache');
+
+      return result;
+    }
+
+    return result;
+  }
+
+  async postUnlikeAlbumByIdHandler(request) {
+    const { id } = request.params;
+    const { id: credentialId } = request.auth.credentials;
+
+    await this.svc.unlikeAlbum({
+      albumId: id,
+      userId: credentialId,
+    });
+
+    return {
+      status: 'success',
+      message: 'Album berhasil diunlike',
+    };
   }
 }
 

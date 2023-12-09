@@ -1,4 +1,5 @@
 const { cwd } = require('process');
+const { SERVER_AUTH_STRATEGY_NAME } = require('../../utils/constant');
 
 const routes = (handler) => [
   {
@@ -41,6 +42,29 @@ const routes = (handler) => [
       directory: {
         path: `${cwd()}/public/uploads/covers`,
       },
+    },
+  },
+
+  // Album Likes
+  {
+    method: 'POST',
+    path: '/albums/{id}/likes',
+    handler: (request, h) => handler.postAlbumLikesHandler(request, h),
+    options: {
+      auth: SERVER_AUTH_STRATEGY_NAME,
+    },
+  },
+  {
+    method: 'GET',
+    path: '/albums/{id}/likes',
+    handler: (request, h) => handler.getTotalLikesByAlbumIdHandler(request, h),
+  },
+  {
+    method: 'DELETE',
+    path: '/albums/{id}/likes',
+    handler: (request, h) => handler.postUnlikeAlbumByIdHandler(request, h),
+    options: {
+      auth: SERVER_AUTH_STRATEGY_NAME,
     },
   },
 ];

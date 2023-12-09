@@ -11,7 +11,13 @@ const AlbumCoverHeadersSchema = Joi.object({
     .required(),
 }).unknown();
 
+const AlbumLikesPayloadSchema = Joi.object({
+  albumId: Joi.string().required(),
+  userId: Joi.string().required(),
+});
+
 module.exports = {
   AlbumPayloadSchema,
   AlbumCoverHeadersSchema,
+  AlbumLikesPayloadSchema,
 };
