@@ -2,6 +2,7 @@ const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const InvariantError = require('../exceptions/InvariantError');
 const NotFoundError = require('../exceptions/NotFoundError');
+const { FILE_LOCATION_COVER_URL } = require('../utils/constant');
 
 class AlbumsService {
   constructor({ storageService, albumLikesService, cacheService }) {
@@ -56,7 +57,7 @@ class AlbumsService {
       id: album.id,
       name: album.name,
       year: album.year,
-      coverUrl: album.cover,
+      coverUrl: FILE_LOCATION_COVER_URL(album.cover),
     };
 
     return {

@@ -21,9 +21,16 @@ const config = {
   },
 };
 
+const FILE_LOCATION_COVER_URL = (filename) => {
+  const { host, port } = config.hapiServerOptions;
+  const result = `http://${host}:${port}/uploads/covers/${filename}`;
+  return result;
+};
+
 module.exports = {
   SERVER_HOSTNAME,
   SERVER_AUTH_STRATEGY_NAME,
   QUEUE_NAME_EXPORT_PLAYLIST,
+  FILE_LOCATION_COVER_URL,
   config,
 };

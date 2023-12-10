@@ -1,4 +1,4 @@
-const { config } = require('../../utils/constant');
+const { FILE_LOCATION_COVER_URL } = require('../../utils/constant');
 
 class AlbumsHandler {
   constructor(service, validator) {
@@ -73,13 +73,11 @@ class AlbumsHandler {
       meta: cover.hapi,
     });
 
-    const { host, port } = config.hapiServerOptions;
-    const fileLocation = `http://${host}:${port}/uploads/covers/${filename}`;
     const response = h.response({
       status: 'success',
       message: 'Sampul berhasil diunggah',
       data: {
-        fileLocation,
+        fileLocation: FILE_LOCATION_COVER_URL(filename),
       },
     });
 
