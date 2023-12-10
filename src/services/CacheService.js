@@ -3,12 +3,10 @@ const { config } = require('../utils/constant');
 
 class CacheService {
   constructor() {
-    const portRedis = config.redis.port;
-    const hostRedis = config.redis.server;
-    const url = `redis://${hostRedis}:${portRedis}`;
-
     this.client = redis.createClient({
-      url,
+      socket: {
+        host: config.redis.server,
+      },
     });
 
     this.client.on('error', (error) => {
