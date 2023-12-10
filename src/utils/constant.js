@@ -13,7 +13,7 @@ const config = {
     accessTokenAge: process.env.ACCESS_TOKEN_AGE,
   },
   rabbitMQ: {
-    server: process.env.RABBITMQ_SERVERF,
+    server: process.env.RABBITMQ_SERVER,
   },
   redis: {
     server: process.env.REDIS_SERVER || '127.0.0.1',
@@ -23,7 +23,7 @@ const config = {
 
 const FILE_LOCATION_COVER_URL = (filename) => {
   const { host, port } = config.hapiServerOptions;
-  const result = `http://${host}:${port}/uploads/covers/${filename}`;
+  const result = filename ? `http://${host}:${port}/uploads/covers/${filename}` : null;
   return result;
 };
 
