@@ -31,7 +31,7 @@ const routes = (handler) => [
         allow: 'multipart/form-data',
         multipart: true,
         output: 'stream',
-        maxBytes: 500000, // 500 kB
+        maxBytes: 512000, // Max Bytes 512KB
       },
     },
   },
